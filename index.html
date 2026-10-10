@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hayati Farm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: radial-gradient(circle at center, #34d399 0%, #059669 50%, #065f46 100%);
+            margin: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            user-select: none;
+        }
+        h1, h2, h3, .font-title {
+            font-family: 'Fredoka One', cursive;
+        }
+        
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0; filter: blur(4px); }
+            100% { transform: scale(1); opacity: 1; filter: blur(0); }
+        }
+        .animate-pop {
+            animation: pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            15%, 45%, 75% { transform: translateX(-8px) rotate(-4deg); }
+            30%, 60%, 90% { transform: translateX(8px) rotate(4deg); }
+        }
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+            filter: hue-rotate(290deg) saturate(250%) drop-shadow(0 0 15px rgba(239, 68, 68, 0.9));
+        }
+        @keyframes grow {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); filter: drop-shadow(0 0 20px rgba(52, 211, 153, 0.9)); }
+            100% { transform: scale(1); }
+        }
+        .animate-grow {
+            animation: grow 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes floatUpOut {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translate(-50%, -150%) scale(1.5); opacity: 0; }
+        }
+        .animate-float-up-out {
+            animation: floatUpOut 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .animal-card {
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .animal-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            filter: brightness(1.1);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .gaming-modal {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .prologue-modal {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2), inset 0 4px 10px rgba(255, 255, 255, 0.8);
+            color: #1f2937;
+        }
+
+        .village-bg {
+            background: none;
+            position: relative;
+        }
+
+        /* ===== Pemandangan desa vektor ===== */
+
+        /* ===== Kartu tugas ===== */
+        .question-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.5rem;
+            box-shadow: 0 14px 30px rgba(6, 78, 59, 0.25);
+            isolation: isolate;
+        }
+        #timer-bar { border-radius: 999px; }
+
+        /* ===== Pilih kegiatan ===== */
+        .activity-card {
+            border-radius: 1.5rem;
+            padding: 1rem 0.6rem;
+            background: #ffffff;
+            border: 2px solid #e2efe7;
+            box-shadow: 0 6px 16px rgba(6, 78, 59, 0.15);
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .activity-card:hover {
+            transform: translateY(-3px);
+            border-color: #34d399;
+            box-shadow: 0 12px 22px rgba(6, 78, 59, 0.22);
+        }
+        .activity-card:active { transform: scale(0.97); }
+
+        /* ===== Mode bertani: petak tanah ===== */
+        .farm-mode .pen-yard {
+            background: linear-gradient(180deg, #d9b48a 0%, #c1946a 55%, #a97b52 100%);
+        }
+        .farm-mode .pen-fence {
+            height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(92, 58, 30, 0.28) 0 0.22rem, transparent 0.22rem 0.9rem);
+        }
+
+        /* ===== Kandang ===== */
+        .pen-card {
+            height: 9rem;
+            padding: 0.5rem;
+            gap: 0.4rem;
+            border-radius: 1.5rem;
+            background: #ffffff;
+            border: 1px solid #e2efe7;
+            box-shadow: 0 10px 24px rgba(6, 78, 59, 0.25);
+            isolation: isolate;
+        }
+        .pen-card > button { border-radius: 1.5rem; }
+        @media (min-width: 640px) { .pen-card { height: 12rem; padding: 0.6rem; } }
+        .pen-ayam { --accent: #f59e0b; }
+        .pen-bebek { --accent: #38bdf8; }
+        .pen-kambing { --accent: #34d399; }
+        .pen-sapi { --accent: #a8a29e; }
+        .pen-title {
+            position: absolute;
+            top: 0.35rem;
+            left: 0.35rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: 'Fredoka One', cursive;
+            font-size: 0.8rem;
+            color: #134e4a;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 999px;
+            padding: 0.15rem 0.75rem 0.15rem 0.5rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+            z-index: 10;
+        }
+        .pen-dot { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--accent); }
+        .pen-yard {
+            position: relative;
+            flex: 1;
+            border-radius: 1.1rem;
+            overflow: hidden;
+            background: linear-gradient(180deg, #e3f6ea 0%, #c6ecb4 55%, #aee09a 100%);
+            box-shadow: inset 0 2px 8px rgba(6, 78, 59, 0.18);
+        }
+        .pen-fence {
+            position: absolute;
+            left: 0; right: 0; top: 0;
+            height: 1.5rem;
+            background:
+                linear-gradient(#e7d9bd, #e7d9bd) 0 0.5rem / 100% 0.2rem no-repeat,
+                linear-gradient(#e7d9bd, #e7d9bd) 0 0.95rem / 100% 0.2rem no-repeat,
+                repeating-linear-gradient(90deg, #f7efe0 0 0.35rem, transparent 0.35rem 1.3rem);
+        }
+        .pen-animals {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 0.25rem;
+            padding: 0 0.25rem 0.35rem;
+        }
+        .pen-animals { will-change: translate; }
+        .pen-animals.walking { animation: hop 0.42s ease-in-out infinite; }
+        @keyframes hop {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        /* Tanaman bergoyang pelan tertiup angin */
+        .farm-mode .pen-animals {
+            transform-origin: 50% 100%;
+            animation: sway 3.6s ease-in-out infinite alternate;
+        }
+        @keyframes sway {
+            from { transform: rotate(-2.5deg); }
+            to { transform: rotate(2.5deg); }
+        }
+        .pen-answer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 2.1rem;
+            flex-shrink: 0;
+            border-radius: 0.9rem;
+            background: linear-gradient(135deg, #0f766e, #115e59);
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(15, 118, 110, 0.35), inset 0 1px 0 rgba(255,255,255,0.25);
+        }
+
+        .callout-bubble {
+            background: #ffffff;
+            border: 4px solid #facc15;
+            border-radius: 2rem;
+            border-bottom-left-radius: 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .callout-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: -20px;
+            border-width: 20px 20px 0 0;
+            border-style: solid;
+            border-color: #facc15 transparent transparent transparent;
+            z-index: -1;
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid #047857;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        .btn-premium:hover {
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.2);
+        }
+        .btn-premium:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 5px rgba(16, 185, 129, 0.5);
+        }
+
+        /* ===== Latar foto blur ===== */
+        #bg-photo {
+            position: fixed;
+            top: -40px; left: -40px; right: -40px; bottom: -40px;
+            z-index: 0;
+            pointer-events: none;
+            background: #065f46 url('https://i.ibb.co.com/9HFYBdnM/38565.png') center / cover no-repeat;
+            filter: blur(10px);
+        }
+        #bg-photo-shade {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* ===== Cover ===== */
+        #screen-cover { background: #064e3b; position: fixed !important; inset: 0 !important; width: auto !important; height: auto !important; }
+        #screen-cover picture, #screen-cover img.cover-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        #screen-cover img.cover-img { object-fit: cover; object-position: center; }
+        .cover-shade {
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 38%;
+            background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(6,40,30,0.55) 100%);
+            pointer-events: none;
+        }
+        .btn-main-cover {
+            position: absolute;
+            left: 50%;
+            bottom: calc(env(safe-area-inset-bottom, 0px) + 7vh);
+            transform: translateX(-50%);
+            min-width: 11rem;
+            padding: 0.95rem 3rem;
+            border-radius: 1.5rem;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.6rem;
+            letter-spacing: 0.12em;
+            color: #fff;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: 3px solid #fff;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4), inset 0 2px 0 rgba(255,255,255,0.3);
+            text-shadow: 0 2px 3px rgba(0,0,0,0.35);
+            cursor: pointer;
+            animation: coverPulse 1.8s ease-in-out infinite;
+            transition: filter 0.2s;
+        }
+        .btn-main-cover:hover { filter: brightness(1.12); }
+        .btn-main-cover:active { transform: translateX(-50%) scale(0.96); }
+        @keyframes coverPulse {
+            0%, 100% { box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 0 rgba(255,255,255,0.55), inset 0 2px 0 rgba(255,255,255,0.3); }
+            50% { box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 16px rgba(255,255,255,0), inset 0 2px 0 rgba(255,255,255,0.3); }
+        }
+
+        /* ===== Desktop: isi game rasio 16:9, background tetap full layar ===== */
+        html, body { height: 100%; min-height: 100%; }
+        @media (min-width: 768px) and (min-aspect-ratio: 1/1) {
+            #screen-prologue, #screen-activity, #screen-config, #screen-game {
+                position: fixed !important;
+                inset: 0 !important;
+                width: auto !important;
+                height: auto !important;
+                box-sizing: border-box;
+                padding-left: max(1rem, calc((100vw - 177.7778vh) / 2)) !important;
+                padding-right: max(1rem, calc((100vw - 177.7778vh) / 2)) !important;
+                padding-top: max(0.75rem, calc((100vh - 56.25vw) / 2)) !important;
+                padding-bottom: max(0.75rem, calc((100vh - 56.25vw) / 2)) !important;
+            }
+        }
+
+        /* ===== Footer developer ===== */
+        .dev-footer {
+            position: fixed;
+            left: 50%;
+            bottom: calc(env(safe-area-inset-bottom, 0px) + 0.35rem);
+            transform: translateX(-50%);
+            z-index: 60;
+            pointer-events: none;
+            white-space: nowrap;
+            padding: 0.2rem 0.9rem;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: rgba(255,255,255,0.95);
+            background: rgba(0,0,0,0.38);
+            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+        }
+        @media (min-width: 640px) { .dev-footer { font-size: 0.75rem; } }
+        /* Sisakan ruang di bawah agar footer tidak menimpa konten game */
+        #screen-prologue, #screen-activity, #screen-config, #screen-game {
+            padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1.9rem) !important;
+        }
+        @media (min-width: 768px) and (min-aspect-ratio: 1/1) {
+            #screen-prologue, #screen-activity, #screen-config, #screen-game {
+                padding-bottom: max(1.9rem, calc((100vh - 56.25vw) / 2)) !important;
+            }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-0 m-0 overflow-hidden bg-gray-900 text-gray-800">
+
+    <!-- Latar pemandangan desa (vektor) -->
+    <div id="bg-photo"></div>
+    <div id="bg-photo-shade"></div>
+
+    <!-- Footer developer -->
+    <div class="dev-footer">Developer by Ifan Shovi, S.Pd</div>
+
+    <svg id="scene" class="fixed inset-0 w-full h-full pointer-events-none" style="z-index:0;display:none" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+        <defs>
+            <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#9fdcf2"/>
+                <stop offset="0.55" stop-color="#d4f3f1"/>
+                <stop offset="1" stop-color="#eefbe9"/>
+            </linearGradient>
+            <linearGradient id="hillBack" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#9be3b6"/><stop offset="1" stop-color="#78d3a0"/>
+            </linearGradient>
+            <linearGradient id="hillMid" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#63cf94"/><stop offset="1" stop-color="#43b97f"/>
+            </linearGradient>
+            <linearGradient id="hillFront" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#3fb27a"/><stop offset="1" stop-color="#25905f"/>
+            </linearGradient>
+            <radialGradient id="sunCore">
+                <stop offset="0" stop-color="#fffdea"/>
+                <stop offset="0.7" stop-color="#fff0a0"/>
+                <stop offset="1" stop-color="#ffe070"/>
+            </radialGradient>
+            <radialGradient id="sunGlow">
+                <stop offset="0" stop-color="#fff9d6" stop-opacity="0.95"/>
+                <stop offset="1" stop-color="#fff9d6" stop-opacity="0"/>
+            </radialGradient>
+            <pattern id="fenceP" width="36" height="40" patternUnits="userSpaceOnUse">
+                <rect x="0" y="14" width="36" height="5" fill="#efe4cd"/>
+                <rect x="0" y="27" width="36" height="5" fill="#efe4cd"/>
+                <rect x="14" y="6" width="8" height="34" rx="2" fill="#fbf5e8"/>
+            </pattern>
+            <g id="tree">
+                <rect x="-5" y="-30" width="10" height="32" rx="3" fill="#8a6a4a"/>
+                <circle cx="0" cy="-54" r="32" fill="#2e9c68"/>
+                <circle cx="-11" cy="-62" r="18" fill="#52c08a" opacity="0.85"/>
+            </g>
+            <g id="pine">
+                <rect x="-4" y="-18" width="8" height="20" fill="#7a5c40"/>
+                <polygon points="0,-90 -28,-38 28,-38" fill="#2a8f78"/>
+                <polygon points="0,-70 -34,-18 34,-18" fill="#2f9f84"/>
+            </g>
+        </defs>
+
+        <rect width="1600" height="900" fill="url(#sky)"/>
+
+        <!-- Matahari -->
+        <circle cx="900" cy="280" r="190" fill="url(#sunGlow)">
+            <animate attributeName="r" values="170;215;170" dur="6s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.75;1;0.75" dur="6s" repeatCount="indefinite"/>
+        </circle>
+        <g stroke="#fff3a8" stroke-width="6" stroke-linecap="round" opacity="0.85">
+            <animateTransform attributeName="transform" type="rotate" from="0 900 280" to="360 900 280" dur="90s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.6;0.95;0.6" dur="4s" repeatCount="indefinite"/>
+                <line x1="980.0" y1="280.0" x2="1018.0" y2="280.0"/>
+                <line x1="973.9" y1="310.6" x2="996.1" y2="319.8"/>
+                <line x1="956.6" y1="336.6" x2="983.4" y2="363.4"/>
+                <line x1="930.6" y1="353.9" x2="939.8" y2="376.1"/>
+                <line x1="900.0" y1="360.0" x2="900.0" y2="398.0"/>
+                <line x1="869.4" y1="353.9" x2="860.2" y2="376.1"/>
+                <line x1="843.4" y1="336.6" x2="816.6" y2="363.4"/>
+                <line x1="826.1" y1="310.6" x2="803.9" y2="319.8"/>
+                <line x1="820.0" y1="280.0" x2="782.0" y2="280.0"/>
+                <line x1="826.1" y1="249.4" x2="803.9" y2="240.2"/>
+                <line x1="843.4" y1="223.4" x2="816.6" y2="196.6"/>
+                <line x1="869.4" y1="206.1" x2="860.2" y2="183.9"/>
+                <line x1="900.0" y1="200.0" x2="900.0" y2="162.0"/>
+                <line x1="930.6" y1="206.1" x2="939.8" y2="183.9"/>
+                <line x1="956.6" y1="223.4" x2="983.4" y2="196.6"/>
+                <line x1="973.9" y1="249.4" x2="996.1" y2="240.2"/>
+        </g>
+        <circle cx="900" cy="280" r="62" fill="url(#sunCore)">
+            <animate attributeName="r" values="62;66;62" dur="4s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- Awan (bergerak pelan melintasi layar) -->
+        <g>
+            <animateTransform attributeName="transform" type="translate" from="-260 0" to="1860 0" dur="110s" begin="-30s" repeatCount="indefinite"/>
+            <g transform="translate(0 150) scale(1.0)" fill="#fff" opacity="0.92">
+                <ellipse cx="0" cy="0" rx="95" ry="28"/><ellipse cx="-48" cy="-14" rx="50" ry="30"/><ellipse cx="45" cy="-24" rx="56" ry="34"/>
+            </g>
+        </g>
+        <g>
+            <animateTransform attributeName="transform" type="translate" from="-260 0" to="1860 0" dur="140s" begin="-95s" repeatCount="indefinite"/>
+            <g transform="translate(0 100) scale(0.8)" fill="#fff" opacity="0.88">
+                <ellipse cx="0" cy="0" rx="95" ry="28"/><ellipse cx="-48" cy="-14" rx="50" ry="30"/><ellipse cx="45" cy="-24" rx="56" ry="34"/>
+            </g>
+        </g>
+        <g>
+            <animateTransform attributeName="transform" type="translate" from="-260 0" to="1860 0" dur="125s" begin="-60s" repeatCount="indefinite"/>
+            <g transform="translate(0 235) scale(1.15)" fill="#fff" opacity="0.9">
+                <ellipse cx="0" cy="0" rx="95" ry="28"/><ellipse cx="-48" cy="-14" rx="50" ry="30"/><ellipse cx="45" cy="-24" rx="56" ry="34"/>
+            </g>
+        </g>
+        <g>
+            <animateTransform attributeName="transform" type="translate" from="-260 0" to="1860 0" dur="160s" begin="-135s" repeatCount="indefinite"/>
+            <g transform="translate(0 190) scale(0.7)" fill="#fff" opacity="0.85">
+                <ellipse cx="0" cy="0" rx="95" ry="28"/><ellipse cx="-48" cy="-14" rx="50" ry="30"/><ellipse cx="45" cy="-24" rx="56" ry="34"/>
+            </g>
+        </g>
+        <g>
+            <animateTransform attributeName="transform" type="translate" from="-260 0" to="1860 0" dur="100s" begin="-15s" repeatCount="indefinite"/>
+            <g transform="translate(0 310) scale(0.9)" fill="#fff" opacity="0.8">
+                <ellipse cx="0" cy="0" rx="95" ry="28"/><ellipse cx="-48" cy="-14" rx="50" ry="30"/><ellipse cx="45" cy="-24" rx="56" ry="34"/>
+            </g>
+        </g>
+
+        <!-- Burung -->
+        <g fill="none" stroke="#4b7185" stroke-width="2.5" stroke-linecap="round">
+            <path d="M520 250 q10 -10 20 0 q10 -10 20 0"/>
+            <path d="M570 224 q8 -8 16 0 q8 -8 16 0"/>
+            <path d="M1120 150 q9 -9 18 0 q9 -9 18 0"/>
+        </g>
+
+        <!-- Pegunungan -->
+        <path d="M0 520 L180 360 L330 470 L520 320 L720 480 L900 380 L1100 500 L1300 340 L1480 470 L1600 400 L1600 900 L0 900 Z" fill="#a9dcd8" opacity="0.85"/>
+        <path d="M0 585 L220 450 L400 540 L640 430 L860 560 L1080 460 L1300 570 L1500 470 L1600 520 L1600 900 L0 900 Z" fill="#82c9bd"/>
+
+        <!-- Bukit -->
+        <path d="M0 610 C200 550 420 550 640 600 C860 650 1080 570 1300 580 C1460 588 1540 610 1600 600 L1600 900 L0 900 Z" fill="url(#hillBack)"/>
+
+        <!-- Pohon belakang -->
+        <use href="#pine" transform="translate(150 632) scale(.8)"/>
+        <use href="#pine" transform="translate(205 640) scale(.65)"/>
+        <use href="#pine" transform="translate(1420 622) scale(.8)"/>
+        <use href="#pine" transform="translate(1485 630) scale(.65)"/>
+
+        <path d="M0 690 C250 620 500 650 760 690 C1000 726 1250 630 1600 680 L1600 900 L0 900 Z" fill="url(#hillMid)"/>
+
+        <!-- Kolam -->
+        <ellipse cx="1190" cy="742" rx="120" ry="20" fill="#8fd8f0"/>
+        <ellipse cx="1170" cy="738" rx="60" ry="6" fill="#d6f4fc" opacity="0.8"/>
+
+        <!-- Lumbung -->
+        <g>
+            <rect x="860" y="608" width="34" height="92" fill="#cfe3e8"/>
+            <path d="M860 608 a17 17 0 0 1 34 0 Z" fill="#9fbcc6"/>
+            <rect x="860" y="636" width="34" height="4" fill="#b4ccd4"/>
+            <rect x="860" y="664" width="34" height="4" fill="#b4ccd4"/>
+            <rect x="680" y="620" width="170" height="80" fill="#e8826b"/>
+            <polygon points="664,622 765,556 866,622" fill="#b4533f"/>
+            <polygon points="664,622 765,556 866,622 866,630 664,630" fill="none"/>
+            <circle cx="765" cy="598" r="10" fill="#fff1e6"/>
+            <rect x="735" y="646" width="60" height="54" rx="3" fill="#fff1e6"/>
+            <path d="M735 646 L795 700 M795 646 L735 700" stroke="#b4533f" stroke-width="4"/>
+            <rect x="735" y="646" width="60" height="54" rx="3" fill="none" stroke="#b4533f" stroke-width="4"/>
+        </g>
+
+        <!-- Pohon tengah -->
+        <use href="#tree" transform="translate(600 700) scale(.95)"/>
+        <use href="#tree" transform="translate(648 708) scale(.7)"/>
+        <use href="#tree" transform="translate(960 704) scale(.9)"/>
+        <use href="#tree" transform="translate(1012 710) scale(.65)"/>
+        <use href="#tree" transform="translate(300 692) scale(1)"/>
+        <use href="#tree" transform="translate(1400 690) scale(1.05)"/>
+
+        <path d="M0 765 C300 715 600 745 900 775 C1200 805 1400 735 1600 755 L1600 900 L0 900 Z" fill="url(#hillFront)"/>
+
+        <!-- Pagar -->
+        <rect x="0" y="726" width="430" height="40" fill="url(#fenceP)"/>
+        <rect x="1200" y="738" width="400" height="40" fill="url(#fenceP)"/>
+
+        <!-- Bunga -->
+        <g>
+            <circle cx="90" cy="820" r="5" fill="#ffd1dc"/><circle cx="170" cy="850" r="5" fill="#fff"/>
+            <circle cx="260" cy="812" r="5" fill="#ffe27a"/><circle cx="380" cy="842" r="5" fill="#ffd1dc"/>
+            <circle cx="560" cy="826" r="5" fill="#fff"/><circle cx="700" cy="852" r="5" fill="#ffe27a"/>
+            <circle cx="860" cy="836" r="5" fill="#ffd1dc"/><circle cx="1010" cy="858" r="5" fill="#fff"/>
+            <circle cx="1150" cy="830" r="5" fill="#ffe27a"/><circle cx="1290" cy="846" r="5" fill="#ffd1dc"/>
+            <circle cx="1420" cy="818" r="5" fill="#fff"/><circle cx="1530" cy="850" r="5" fill="#ffe27a"/>
+        </g>
+    </svg>
+
+    <!-- Cover: gambar berbeda untuk mobile & desktop -->
+    <div id="screen-cover" class="w-full h-full relative overflow-hidden z-50">
+        <picture>
+            <source media="(min-width: 768px) and (min-aspect-ratio: 1/1)" srcset="https://i.ibb.co.com/fYf3tgpJ/38560.png">
+            <img class="cover-img" src="https://i.ibb.co.com/RGb9wpzC/38561.png" alt="Hayati Farm">
+        </picture>
+        <div class="cover-shade"></div>
+        <button onclick="showScreen('screen-prologue')" class="btn-main-cover">MAIN</button>
+    </div>
+
+    <div id="screen-prologue" class="hidden w-full h-full village-bg relative overflow-hidden flex flex-col justify-center items-center p-4 sm:p-6 z-50">
+        <!-- Overlay Blur Aman (Tidak menelan klik) -->
+        <div class="absolute inset-0 bg-white/10 pointer-events-none z-0"></div>
+        
+        <div id="slider-1" class="slide animate-pop w-full max-w-[90%] sm:max-w-md p-6 sm:p-8 prologue-modal rounded-[2rem] sm:rounded-[2.5rem] text-center relative z-20">
+            <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-tr from-emerald-300 to-green-500 rounded-3xl mx-auto flex items-center justify-center text-4xl sm:text-5xl mb-4 sm:mb-5 shadow-[0_10px_30px_rgba(16,185,129,0.4)] animate-float border-2 border-white">🌿</div>
+            <h1 class="text-3xl sm:text-4xl text-emerald-800 mb-2 font-title tracking-wide">HAYATI FARM</h1>
+            <div class="text-3xl sm:text-4xl mb-3 drop-shadow-sm">👦 👧 🧒</div>
+            <p class="text-sm sm:text-base text-emerald-600 mb-2 font-extrabold tracking-wide">Halo! Kenalkan, kami Adi, Wiya, dan Ata.</p>
+            <p class="text-xs sm:text-sm text-gray-600 mb-6 sm:mb-8 font-medium leading-relaxed">Kakak beradik yang tinggal di desa asri bersama Ayah dan Ibu, pemilik usaha peternakan dan pertanian keluarga.</p>
+            <button onclick="nextSlide(2)" class="w-full btn-premium text-white font-title py-3.5 px-8 rounded-2xl text-lg transition-transform active:scale-95 shadow-[0_4px_15px_rgba(16,185,129,0.4)] cursor-pointer">LANJUT</button>
+        </div>
+
+        <div id="slider-2" class="slide hidden w-full max-w-[90%] sm:max-w-md p-6 sm:p-8 prologue-modal rounded-[2rem] sm:rounded-[2.5rem] text-center relative z-20">
+            <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-tr from-amber-300 to-yellow-500 rounded-3xl mx-auto flex items-center justify-center text-4xl sm:text-5xl mb-4 sm:mb-5 shadow-[0_10px_30px_rgba(245,158,11,0.4)] animate-float border-2 border-white">🏡</div>
+            <h2 class="text-2xl sm:text-3xl text-amber-600 mb-1 font-title tracking-wide">Usaha Keluarga</h2>
+            <div class="text-3xl sm:text-4xl mb-2 drop-shadow-sm">👨‍🌾 👩‍🌾</div>
+            <p class="text-xs sm:text-sm text-gray-600 mb-6 sm:mb-8 font-medium leading-relaxed">Ayah dan Ibu mengelola Hayati Farm: kandang berisi Ayam, Bebek, Kambing, dan Sapi, serta ladang yang ditanami Padi, Jagung, Tomat, dan Wortel.</p>
+            <button onclick="nextSlide(3)" class="w-full btn-premium text-white font-title py-3.5 px-8 rounded-2xl text-lg transition-transform active:scale-95 shadow-[0_4px_15px_rgba(16,185,129,0.4)] cursor-pointer">LANJUT</button>
+        </div>
+
+        <div id="slider-3" class="slide hidden w-full max-w-[90%] sm:max-w-md p-6 sm:p-8 prologue-modal rounded-[2rem] sm:rounded-[2.5rem] text-center relative z-20">
+            <div class="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-tr from-blue-300 to-indigo-500 rounded-3xl mx-auto flex items-center justify-center text-4xl sm:text-5xl mb-4 sm:mb-5 shadow-[0_10px_30px_rgba(59,130,246,0.4)] animate-float border-2 border-white">🧮</div>
+            <h2 class="text-2xl sm:text-3xl text-indigo-700 mb-2 font-title tracking-wide">Bantu Orang Tua</h2>
+            <p class="text-xs sm:text-sm text-gray-600 mb-6 sm:mb-8 font-medium leading-relaxed">Hari ini Ayah dan Ibu sedang sibuk. Selesaikan misi hitungan tepat waktu agar hewan sehat dan tanaman subur. Kamu bisa membantu beternak atau bertani!</p>
+            <button onclick="showScreen('screen-activity')" class="w-full btn-premium text-white font-title py-3.5 px-8 rounded-2xl text-lg transition-transform active:scale-95 shadow-[0_4px_15px_rgba(16,185,129,0.4)] cursor-pointer">MULAI PETUALANGAN!</button>
+        </div>
+    </div>
+
+    <div id="screen-activity" class="hidden w-full h-full village-bg relative overflow-y-auto overflow-x-hidden flex flex-col p-4 sm:p-6 items-center z-50">
+        <div class="w-full max-w-[90%] sm:max-w-md prologue-modal rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 text-center animate-pop relative z-20 my-auto">
+            <h2 class="text-2xl sm:text-3xl text-emerald-800 mb-1 font-title tracking-wide">PILIH KEGIATAN</h2>
+            <p class="text-gray-600 mb-5 sm:mb-6 text-xs sm:text-sm font-medium">Hari ini Adi, Wiya, dan Ata ingin membantu Ayah dan Ibu di...</p>
+
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="selectActivity('ternak')" class="activity-card ternak">
+                    <div class="text-4xl sm:text-5xl mb-2">🐄🐐</div>
+                    <div class="font-title text-lg sm:text-xl text-amber-700">Beternak</div>
+                    <div class="text-[11px] sm:text-xs text-gray-500 font-semibold leading-snug mt-1">Rawat ayam, bebek, kambing, dan sapi</div>
+                </button>
+                <button onclick="selectActivity('tani')" class="activity-card tani">
+                    <div class="text-4xl sm:text-5xl mb-2">🌾🌽</div>
+                    <div class="font-title text-lg sm:text-xl text-emerald-700">Bertani</div>
+                    <div class="text-[11px] sm:text-xs text-gray-500 font-semibold leading-snug mt-1">Tanam padi, jagung, tomat, dan wortel</div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-config" class="hidden w-full h-full village-bg relative overflow-hidden flex flex-col p-4 sm:p-6 items-center justify-center z-50">
+        <!-- Overlay Blur Aman (Tidak menelan klik) -->
+        <div class="absolute inset-0 bg-white/10 pointer-events-none z-0"></div>
+        
+        <div class="w-full max-w-[90%] sm:max-w-md prologue-modal rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 text-center animate-pop relative z-20">
+            <h2 class="text-2xl sm:text-3xl text-emerald-800 mb-1 font-title tracking-wide">PILIH KARAKTER</h2>
+            <p id="config-subtitle" class="text-gray-600 mb-6 sm:mb-8 text-xs sm:text-sm font-medium">Siapa peternak cilik andalan hari ini?</p>
+            
+            <div class="flex gap-2 sm:gap-3 mb-6 sm:mb-8 justify-center">
+                <div onclick="selectCharacter('Adi', '👦')" id="char-Adi" class="char-card bg-slate-50 border-2 border-gray-200 p-3 sm:p-4 rounded-2xl sm:rounded-3xl cursor-pointer hover:bg-slate-100 transition-all text-center w-1/3 shadow-sm relative z-30">
+                    <div class="text-3xl sm:text-4xl mb-1 sm:mb-2">👦</div>
+                    <div class="font-bold text-gray-700 text-xs sm:text-sm font-title tracking-wide">Adi</div>
+                </div>
+                <div onclick="selectCharacter('Wiya', '👧')" id="char-Wiya" class="char-card bg-slate-50 border-2 border-gray-200 p-3 sm:p-4 rounded-2xl sm:rounded-3xl cursor-pointer hover:bg-slate-100 transition-all text-center w-1/3 shadow-sm relative z-30">
+                    <div class="text-3xl sm:text-4xl mb-1 sm:mb-2">👧</div>
+                    <div class="font-bold text-gray-700 text-xs sm:text-sm font-title tracking-wide">Wiya</div>
+                </div>
+                <div onclick="selectCharacter('Ata', '🧒')" id="char-Ata" class="char-card bg-slate-50 border-2 border-gray-200 p-3 sm:p-4 rounded-2xl sm:rounded-3xl cursor-pointer hover:bg-slate-100 transition-all text-center w-1/3 shadow-sm relative z-30">
+                    <div class="text-3xl sm:text-4xl mb-1 sm:mb-2">🧒</div>
+                    <div class="font-bold text-gray-700 text-xs sm:text-sm font-title tracking-wide">Ata</div>
+                </div>
+            </div>
+            
+            <button id="btn-main" onclick="startGame()" disabled class="w-full bg-gray-200 text-gray-400 font-title py-3.5 px-8 rounded-2xl text-lg transition-transform active:scale-95 cursor-not-allowed relative z-30">PILIH KARAKTER DULU</button>
+            <button onclick="showScreen('screen-activity')" class="mt-3 text-xs sm:text-sm font-bold text-gray-500 hover:text-emerald-700 cursor-pointer relative z-30">← Ganti kegiatan</button>
+        </div>
+    </div>
+
+    <div id="screen-game" class="hidden w-full h-full village-bg relative overflow-y-auto overflow-x-hidden flex flex-col justify-between gap-2 p-2.5 sm:p-5 z-40">
+        <!-- Overlay Blur Aman (Tidak menelan klik) -->
+        <div class="absolute inset-0 bg-white/15 pointer-events-none z-0"></div>
+        
+        <!-- Elegant Top HUD & Question Card -->
+        <div class="w-full max-w-4xl mx-auto flex flex-col gap-2 sm:gap-3 z-20">
+            <!-- Top Status Bar -->
+            <div class="glass-panel px-4 sm:px-5 py-2.5 sm:py-3 rounded-[2rem] flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div id="player-avatar" class="text-xl sm:text-2xl bg-gradient-to-br from-emerald-300 to-emerald-500 rounded-2xl w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center border border-white/50 shadow-md drop-shadow-md">👦</div>
+                    <div class="hidden sm:block">
+                        <div id="player-name" class="font-title text-base sm:text-xl text-white leading-tight drop-shadow-md">Adi</div>
+                        <div class="text-[9px] sm:text-[10px] text-emerald-200 font-extrabold uppercase tracking-widest drop-shadow-md" id="player-title">Master Peternak</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 sm:gap-4 bg-black/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl border border-white/10 shadow-inner">
+                    <div id="streak-container" class="hidden text-right border-r border-white/20 pr-2 sm:pr-4">
+                        <div class="text-[9px] sm:text-[10px] text-orange-200 font-extrabold uppercase tracking-wider">Combo</div>
+                        <div class="font-title text-lg sm:text-xl text-orange-400 flex items-center gap-1 drop-shadow-md">🔥 <span id="streak-display">0</span></div>
+                    </div>
+                    <div class="text-right border-r border-white/20 pr-2 sm:pr-4">
+                        <div class="text-[9px] sm:text-[10px] text-green-200 font-extrabold uppercase tracking-wider">Uang</div>
+                        <div class="font-title text-lg sm:text-xl text-green-400 flex items-center gap-1 drop-shadow-md">💰 <span id="coin-display">0</span></div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[9px] sm:text-[10px] text-gray-300 font-extrabold uppercase tracking-wider">Skor Poin</div>
+                        <div class="font-title text-xl sm:text-2xl text-yellow-400 flex items-center gap-1.5 drop-shadow-md">⭐ <span id="score-display">0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kartu Tugas -->
+            <div class="question-card relative w-full max-w-lg mx-auto mt-1 px-3 sm:px-5 pt-3 pb-3 z-20">
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <div id="mission-icon-bg" class="shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-100 border border-emerald-100 flex items-center justify-center text-2xl sm:text-4xl">🌾</div>
+                    <div class="flex-1 min-w-0 flex flex-col items-start gap-0.5">
+                        <span id="mission-badge" class="bg-emerald-100 text-emerald-700 border border-emerald-300 px-3 py-0.5 rounded-full text-[10px] sm:text-xs font-extrabold uppercase tracking-wider transition-colors duration-300">🍱 Beri Pakan</span>
+                        <div class="font-title text-2xl sm:text-4xl text-slate-800 leading-tight" id="auto-math-question">?</div>
+                    </div>
+                    <div class="shrink-0 flex flex-col items-center justify-center rounded-2xl bg-slate-50 border border-slate-200 px-2.5 py-1.5">
+                        <span class="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Waktu</span>
+                        <span class="font-title text-lg sm:text-xl text-slate-800 leading-none">⏱️ <span id="timer-text">60</span>s</span>
+                    </div>
+                </div>
+                <div class="mt-3 h-2 w-full rounded-full bg-slate-200 overflow-hidden">
+                    <div id="timer-bar" class="h-full bg-gradient-to-r from-yellow-400 to-amber-500 w-full transition-all duration-1000"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1 min-h-0 w-full relative pointer-events-none"></div>
+
+        <div class="w-full max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4 z-20 pb-1 sm:pb-4 px-1 sm:px-2">
+
+            <!-- Kandang Ayam -->
+            <div onclick="feedAnimal('ayam')" class="animal-card pen-card pen-ayam relative cursor-pointer overflow-hidden flex flex-col">
+                <button id="treat-btn-ayam" onclick="treatAnimal('ayam', event)" class="hidden absolute inset-0 bg-red-900/80 backdrop-blur-sm z-40 flex-col items-center justify-center rounded-[1.75rem]">
+                    <div class="sick-title text-red-100 font-title text-xs sm:text-sm mb-1 text-center drop-shadow-md">Hewan Sakit!</div>
+                    <div class="bg-green-500 hover:bg-green-400 text-white font-title text-xs sm:text-base px-3 py-1.5 rounded-xl shadow-[0_0_20px_rgba(34,197,94,0.8)] animate-pulse transition-all transform hover:scale-110 treat-label">RAWAT💊💰20</div>
+                </button>
+                <button id="sell-btn-ayam" onclick="sellAnimals('ayam', event)" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm z-30 flex-col items-center justify-center rounded-[1.75rem]">
+                    <div class="bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-title text-sm sm:text-lg px-4 py-2 rounded-xl shadow-[0_0_20px_rgba(250,204,21,0.8)] animate-pulse transition-all transform hover:scale-110 sell-label">JUAL! 💰50</div>
+                </button>
+                <div class="pen-yard">
+                    <div class="pen-fence"></div>
+                    <div class="pen-title"><span class="pen-dot"></span><span class="pen-name">Ayam</span></div>
+                    <div class="pen-animals">
+                        <div id="children-left-ayam" class="flex-1 flex flex-wrap-reverse justify-end gap-0.5 max-w-[45%] content-end"></div>
+                        <div id="animal-ayam" class="text-4xl sm:text-6xl transition-all duration-300 relative z-10 drop-shadow-[0_5px_5px_rgba(0,0,0,0.35)] origin-bottom flex-shrink-0" style="transform: scale(1)">
+                        <svg viewBox="0 0 64 64" style="display:block;width:1.2em;height:1.2em" aria-label="Ayam">
+                            <g stroke="#f59e0b" stroke-width="2.6" stroke-linecap="round" fill="none">
+                                <path d="M27 46 L27 57 M27 57 L22 60 M27 57 L27 61 M27 57 L32 60"/>
+                                <path d="M37 46 L37 57 M37 57 L32 60 M37 57 L37 61 M37 57 L42 60"/>
+                            </g>
+                            <path d="M15 34 Q3 30 3 17 Q14 19 20 30 Z" fill="#e7dcc4" stroke="#d3c7ab" stroke-width="1"/>
+                            <path d="M14 38 Q1 38 1 26 Q12 27 19 35 Z" fill="#f4eddc" stroke="#d3c7ab" stroke-width="1"/>
+                            <ellipse cx="32" cy="37" rx="19" ry="14" fill="#fff" stroke="#d9cfba" stroke-width="1.2"/>
+                            <path d="M22 33 Q34 28 42 38 Q33 48 21 41 Z" fill="#f1e8d6" stroke="#d3c7ab" stroke-width="1"/>
+                            <circle cx="46" cy="24" r="9.5" fill="#fff" stroke="#d9cfba" stroke-width="1.2"/>
+                            <g fill="#ef4444">
+                                <circle cx="42.5" cy="14.5" r="3.2"/><circle cx="46.8" cy="12.8" r="3.6"/><circle cx="51" cy="15.5" r="3.1"/>
+                            </g>
+                            <polygon points="54,22.5 62,26 54,29" fill="#fbbf24" stroke="#f59e0b" stroke-width="0.8" stroke-linejoin="round"/>
+                            <ellipse cx="52.5" cy="32" rx="2.6" ry="3.8" fill="#ef4444"/>
+                            <circle cx="49.5" cy="23" r="1.7" fill="#1f2937"/>
+                            <circle cx="50" cy="22.4" r="0.5" fill="#fff"/>
+                        </svg>
+                    </div>
+                        <div id="children-right-ayam" class="flex-1 flex flex-wrap-reverse justify-start gap-0.5 max-w-[45%] content-end"></div>
+                    </div>
+                </div>
+                <div class="pen-answer">
+                    <span id="food-name-ayam" class="font-title text-xl sm:text-2xl tracking-widest">-</span>
+                </div>
+            </div>
+
+            <!-- Kandang Bebek -->
+            <div onclick="feedAnimal('bebek')" class="animal-card pen-card pen-bebek relative cursor-pointer overflow-hidden flex flex-col">
+                <button id="treat-btn-bebek" onclick="treatAnimal('bebek', event)" class="hidden absolute inset-0 bg-red-900/80 backdrop-blur-sm z-40 flex-col items-center justify-center rounded-[1.75rem]">
+                    <div class="sick-title text-red-100 font-title text-xs sm:text-sm mb-1 text-center drop-shadow-md">Hewan Sakit!</div>
+                    <div class="bg-green-500 hover:bg-green-400 text-white font-title text-xs sm:text-base px-3 py-1.5 rounded-xl shadow-[0_0_20px_rgba(34,197,94,0.8)] animate-pulse transition-all transform hover:scale-110 treat-label">RAWAT💊💰20</div>
+                </button>
+                <button id="sell-btn-bebek" onclick="sellAnimals('bebek', event)" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm z-30 flex-col items-center justify-center rounded-[1.75rem]">
+                    <div class="bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-title text-sm sm:text-lg px-4 py-2 rounded-xl shadow-[0_0_20px_rgba(250,204,21,0.8)] animate-pulse transition-all transform hover:scale-110 sell-label">JUAL! 💰50</div>
+                </button>
+                <div class="pen-yard">
+                    <div class="pen-fence"></div>
+                    <div class="pen-title"><span class="pen-dot"></span><span class="pen-name">Bebek</span></div>
+                    <div class="pen-animals">
+                        <div id="children-left-bebek" class="flex-1 flex flex-wrap-reverse justify-end gap-0.5 max-w-[45%] content-end"></div>
+                        <div id="animal-bebek" class="text-4xl sm:text-6xl transition-all duration-300 relative z-10 drop-shadow-[0_5px_5px_rgba(0,0,0,0.35)] origin-bottom flex-shrink-0" style="transform: scale(1)">🦆</div>
+                        <div id="children-right-bebek" class="flex-1 flex flex-wrap-reverse justify-start gap-0.5 max-w-[45%] content-end"></div>
+                    </div>
+                </div>
+                <div class="pen-answer">
+                    <span id="food-name-bebek" class="font-title text-xl sm:text-2xl tracking-widest">-</span>
+                </div>
+            </div>
+
+            <!-- Kandang Kambing -->
+            <div onclick="feedAnimal('kambing')" class="animal-card pen-card pen-kambing relative cursor-pointer overflow-hidden flex flex-col">
+                <button id="treat-btn-kambing" onclick="treatAnimal('kambing', event)" class="hidden absolute inset-0 bg-red-900/80 backdrop-blur-sm z-40 flex-col items-center justify-center rounded-[1.75rem]">
+                    <div class="sick-title text-red-100 font-title text-xs sm:text-sm mb-1 text-center drop-shadow-md">Hewan Sakit!</div>
+                    <div class="bg-green-500 hover:bg-green-400 text-white font-title text-xs sm:text-base px-3 py-1.5 rounded-xl shadow-[0_0_20px_rgba(34,197,94,0.8)] animate-pulse transition-all transform hover:scale-110 treat-label">RAWAT💊💰20</div>
+                </button>
+                <button id="sell-btn-kambing" onclick="sellAnimals('kambing', event)" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm z-30 flex-col items-center justify-center rounded-[1.75rem]">
+                    <div class="bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-title text-sm sm:text-lg px-4 py-2 rounded-xl shadow-[0_0_20px_rgba(250,204,21,0.8)] animate-pulse transition-all transform hover:scale-110 sell-label">JUAL! 💰50</div>
+                </button>
+                <div class="pen-yard">
+                    <div class="pen-fence"></div>
+                    <div class="pen-title"><span class="pen-dot"></span><span class="pen-name">Kambing</span></div>
+                    <div class="pen-animals">
+                        <div id="children-left-kambing" class="flex-1 flex flex-wrap-reverse justify-end gap-0.5 max-w-[45%] content-end"></div>
+                        <div id="animal-kambing" class="text-4xl sm:text-6xl transition-all duration-300 relative z-10 drop-shadow-[0_5px_5px_rgba(0,0,0,0.35)] origin-bottom flex-shrink-0" style="transform: scale(1)">🐐</div>
+                        <div id="children-right-kambing" class="flex-1 flex flex-wrap-reverse justify-start gap-0.5 max-w-[45%] content-end"></div>
+                    </div>
+                </div>
+                <div class="pen-answer">
+                    <span id="food-name-kambing" class="font-title text-xl sm:text-2xl tracking-widest">-</span>
+                </div>
+            </div>
+
+            <!-- Kandang Sapi -->
+            <div onclick="feedAnimal('sapi')" class="animal-card pen-card pen-sapi relative cursor-pointer overflow-hidden flex flex-col">
+                <button id="treat-btn-sapi" onclick="treatAnimal('sapi', event)" class="hidden absolute inset-0 bg-red-900/80 backdrop-blur-sm z-40 flex-col items-center justify-center rounded-[1.75rem]">
+                    <div class="sick-title text-red-100 font-title text-xs sm:text-sm mb-1 text-center drop-shadow-md">Hewan Sakit!</div>
+                    <div class="bg-green-500 hover:bg-green-400 text-white font-title text-xs sm:text-base px-3 py-1.5 rounded-xl shadow-[0_0_20px_rgba(34,197,94,0.8)] animate-pulse transition-all transform hover:scale-110 treat-label">RAWAT💊💰20</div>
+                </button>
+                <button id="sell-btn-sapi" onclick="sellAnimals('sapi', event)" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm z-30 flex-col items-center justify-center rounded-[1.75rem]">
+                    <div class="bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-title text-sm sm:text-lg px-4 py-2 rounded-xl shadow-[0_0_20px_rgba(250,204,21,0.8)] animate-pulse transition-all transform hover:scale-110 sell-label">JUAL! 💰50</div>
+                </button>
+                <div class="pen-yard">
+                    <div class="pen-fence"></div>
+                    <div class="pen-title"><span class="pen-dot"></span><span class="pen-name">Sapi</span></div>
+                    <div class="pen-animals">
+                        <div id="children-left-sapi" class="flex-1 flex flex-wrap-reverse justify-end gap-0.5 max-w-[45%] content-end"></div>
+                        <div id="animal-sapi" class="text-4xl sm:text-6xl transition-all duration-300 relative z-10 drop-shadow-[0_5px_5px_rgba(0,0,0,0.35)] origin-bottom flex-shrink-0" style="transform: scale(1)">🐄</div>
+                        <div id="children-right-sapi" class="flex-1 flex flex-wrap-reverse justify-start gap-0.5 max-w-[45%] content-end"></div>
+                    </div>
+                </div>
+                <div class="pen-answer">
+                    <span id="food-name-sapi" class="font-title text-xl sm:text-2xl tracking-widest">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="feedback-overlay" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div id="feedback-box" class="prologue-modal rounded-[2.5rem] p-8 text-center shadow-[0_10px_50px_rgba(0,0,0,0.5)] animate-pop max-w-sm w-full border-2 border-emerald-400">
+                <div id="feedback-icon" class="text-6xl mb-4 drop-shadow-sm">🎉</div>
+                <div id="feedback-text" class="font-title text-3xl text-emerald-600 mb-2 drop-shadow-sm">Jawaban Benar!</div>
+                <div id="feedback-sub" class="text-gray-600 text-sm font-bold tracking-wide">Hewan makan dengan lahap (+10 Poin)</div>
+            </div>
+        </div>
+
+        <script>
+        let state = {
+            player: { name: '', avatar: '' },
+            score: 0,
+            coins: 0,
+            streak: 0,
+            animals: {
+                ayam: { scale: 1, children: 0, childEmoji: '🐥', failCount: 0, isSick: false, neglectCount: 0 },
+                bebek: { scale: 1, children: 0, childEmoji: '🐤', failCount: 0, isSick: false, neglectCount: 0 },
+                kambing: { scale: 1, children: 0, childEmoji: '🐐', failCount: 0, isSick: false, neglectCount: 0 },
+                sapi: { scale: 1, children: 0, childEmoji: '🐄', failCount: 0, isSick: false, neglectCount: 0 }
+            },
+            currentQuestion: { text: '', answer: 0, targetAnimal: '' },
+            timer: 60,
+            timerInterval: null,
+            isAnswering: false
+        };
+
+        function showScreen(screenId) {
+            ['screen-cover', 'screen-prologue', 'screen-activity', 'screen-config', 'screen-game'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.add('hidden');
+            });
+            const screen = document.getElementById(screenId);
+            if(screen) {
+                screen.classList.remove('hidden');
+                screen.classList.remove('animate-pop');
+                void screen.offsetWidth;
+                screen.classList.add('animate-pop');
+            }
+        }
+
+        function nextSlide(slideNum) {
+            document.querySelectorAll('.slide').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('animate-pop');
+            });
+            const next = document.getElementById('slider-' + slideNum);
+            if(next) {
+                next.classList.remove('hidden');
+                void next.offsetWidth;
+                next.classList.add('animate-pop');
+            }
+        }
+
+        function selectCharacter(name, avatar) {
+            state.player.name = name;
+            state.player.avatar = avatar;
+            
+            document.querySelectorAll('.char-card').forEach(el => {
+                el.classList.remove('border-emerald-400', 'bg-emerald-100', 'shadow-[0_5px_15px_rgba(16,185,129,0.4)]');
+                el.classList.add('border-gray-200', 'bg-slate-50');
+            });
+            
+            const selected = document.getElementById('char-' + name);
+            selected.classList.remove('border-gray-200', 'bg-slate-50');
+            selected.classList.add('border-emerald-400', 'bg-emerald-100', 'shadow-[0_5px_15px_rgba(16,185,129,0.4)]');
+            
+            const btn = document.getElementById('btn-main');
+            btn.disabled = false;
+            btn.textContent = "MAIN SEKARANG";
+            btn.className = "w-full btn-premium text-white font-title py-3.5 px-10 rounded-2xl text-lg transition-transform active:scale-95 mt-2 cursor-pointer shadow-[0_4px_15px_rgba(16,185,129,0.4)]";
+        }
+
+        function startGame() {
+            applyMode(state.mode || 'ternak');
+            resetFarmState();
+            document.getElementById('player-name').textContent = state.player.name;
+            document.getElementById('player-avatar').textContent = state.player.avatar;
+            state.streak = 0;
+            state.coins = 0;
+            document.getElementById('coin-display').textContent = state.coins;
+            updateStreakUI();
+            updateScore(0);
+            showScreen('screen-game');
+            generateNewQuestion();
+            startTimer();
+        }
+
+        function updateScore(points) {
+            state.score += points;
+            if(state.score < 0) state.score = 0; 
+            document.getElementById('score-display').textContent = state.score;
+            
+            const scoreEl = document.getElementById('score-display');
+            scoreEl.classList.add('animate-grow');
+            setTimeout(() => scoreEl.classList.remove('animate-grow'), 500);
+        }
+
+        function updateStreakUI() {
+            const container = document.getElementById('streak-container');
+            const display = document.getElementById('streak-display');
+            if (state.streak >= 2) {
+                container.classList.remove('hidden');
+                display.textContent = state.streak;
+                display.classList.add('animate-pop');
+                setTimeout(() => display.classList.remove('animate-pop'), 400);
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function showFloatingScore(animalType, points, isPositive) {
+            const card = document.getElementById(`animal-${animalType}`).closest('.animal-card');
+            const floater = document.createElement('div');
+            const sign = isPositive ? '+' : '';
+            floater.textContent = `${sign}${points}`;
+            floater.className = `absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-title text-4xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] z-50 animate-float-up-out pointer-events-none ${isPositive ? 'text-green-400' : 'text-red-500'}`;
+            card.appendChild(floater);
+            setTimeout(() => floater.remove(), 1000);
+        }
+
+        function showFloatingText(animalType, text, colorClass) {
+            const card = document.getElementById(`animal-${animalType}`).closest('.animal-card');
+            const floater = document.createElement('div');
+            floater.textContent = text;
+            floater.className = `absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-title text-3xl sm:text-4xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] z-50 animate-float-up-out pointer-events-none ${colorClass}`;
+            card.appendChild(floater);
+            setTimeout(() => floater.remove(), 1500);
+        }
+
+        const NEEDS = {
+            ternak: [
+                { text: '🍱 Beri Pakan', bg: '🌾', color: 'text-emerald-700', bgClass: 'bg-emerald-100 border-emerald-300' },
+                { text: '💧 Beri Minum', bg: '💧', color: 'text-blue-700', bgClass: 'bg-blue-100 border-blue-300' },
+                { text: '💊 Beri Vitamin', bg: '✨', color: 'text-pink-700', bgClass: 'bg-pink-100 border-pink-300' },
+                { text: '🧹 Bersihkan Kandang', bg: '✨', color: 'text-amber-700', bgClass: 'bg-amber-100 border-amber-300' }
+            ],
+            tani: [
+                { text: '🌱 Tanam Benih', bg: '🌱', color: 'text-emerald-700', bgClass: 'bg-emerald-100 border-emerald-300' },
+                { text: '💧 Siram Tanaman', bg: '💧', color: 'text-blue-700', bgClass: 'bg-blue-100 border-blue-300' },
+                { text: '🧪 Beri Pupuk', bg: '✨', color: 'text-pink-700', bgClass: 'bg-pink-100 border-pink-300' },
+                { text: '🌿 Cabut Gulma', bg: '🌿', color: 'text-amber-700', bgClass: 'bg-amber-100 border-amber-300' }
+            ]
+        };
+        let farmNeeds = NEEDS.ternak;
+
+        // Pengaturan tiap mode kegiatan (kunci petak tetap ayam/bebek/kambing/sapi di balik layar)
+        const MODES = {
+            ternak: {
+                title: 'Master Peternak',
+                subtitle: 'Siapa peternak cilik andalan hari ini?',
+                slots: {
+                    ayam:    { label: 'Ayam',    child: '🐥' },
+                    bebek:   { label: 'Bebek',   child: '🐤' },
+                    kambing: { label: 'Kambing', child: '🐐' },
+                    sapi:    { label: 'Sapi',    child: '🐄' }
+                },
+                text: {
+                    rawatDulu: 'Rawat Dulu!', mati: 'Mati 1 🪦', sakit: 'Sakit! 🤒', sehat: 'Sehat! ✨',
+                    sukses: 'Hewan sehat dan senang!',
+                    sickTitle: 'Hewan Sakit!', treat: 'RAWAT💊💰20', sell: 'JUAL! 💰50'
+                }
+            },
+            tani: {
+                title: 'Master Petani',
+                subtitle: 'Siapa petani cilik andalan hari ini?',
+                slots: {
+                    ayam:    { label: 'Padi',   emoji: '🌾', child: '🌾' },
+                    bebek:   { label: 'Jagung', emoji: '🌽', child: '🌽' },
+                    kambing: { label: 'Tomat',  emoji: '🍅', child: '🍅' },
+                    sapi:    { label: 'Wortel', emoji: '🥕', child: '🥕' }
+                },
+                text: {
+                    rawatDulu: 'Basmi Hama Dulu!', mati: 'Gagal Panen 🥀', sakit: 'Kena Hama! 🐛', sehat: 'Aman! ✨',
+                    sukses: 'Tanaman subur dan sehat!',
+                    sickTitle: 'Terserang Hama!', treat: 'BASMI🧴💰20', sell: 'PANEN! 💰50'
+                }
+            }
+        };
+        let T = MODES.ternak.text;
+        const originalAnimalHtml = {};
+
+        function applyMode(mode) {
+            state.mode = mode;
+            const cfg = MODES[mode];
+            T = cfg.text;
+            farmNeeds = NEEDS[mode];
+            document.getElementById('screen-game').classList.toggle('farm-mode', mode === 'tani');
+            document.getElementById('player-title').textContent = cfg.title;
+
+            Object.keys(cfg.slots).forEach(key => {
+                const slot = cfg.slots[key];
+                const el = document.getElementById(`animal-${key}`);
+                const card = el.closest('.animal-card');
+                if (!(key in originalAnimalHtml)) originalAnimalHtml[key] = el.innerHTML;
+                el.innerHTML = slot.emoji || originalAnimalHtml[key];
+                state.animals[key].childEmoji = slot.child;
+                card.querySelector('.pen-name').textContent = slot.label;
+                card.querySelector('.sick-title').textContent = T.sickTitle;
+                card.querySelector('.treat-label').textContent = T.treat;
+                card.querySelector('.sell-label').textContent = T.sell;
+            });
+
+            // hewan berjalan-jalan; tanaman diam dan bergoyang
+            if (mode === 'ternak') startWander(); else stopWander();
+        }
+
+        function resetFarmState() {
+            clearInterval(state.timerInterval);
+            state.isAnswering = false;
+            state.score = 0;
+            Object.keys(state.animals).forEach(key => {
+                Object.assign(state.animals[key], { scale: 1, children: 0, failCount: 0, isSick: false, neglectCount: 0 });
+                const el = document.getElementById(`animal-${key}`);
+                el.style.transform = 'scale(1)';
+                renderChildren(key);
+                updateSickUI(key);
+            });
+        }
+
+        // ===== Hewan berjalan santai ke kanan-kiri di dalam kandang =====
+        const wander = { active: false, timers: {}, x: {} };
+        // Arah hadap gambar bawaan: ayam (SVG) menghadap kanan, emoji lain menghadap kiri
+        const FACES_RIGHT = { ayam: true, bebek: false, kambing: false, sapi: false };
+
+        function stopWander() {
+            wander.active = false;
+            Object.values(wander.timers).forEach(clearTimeout);
+            wander.timers = {};
+            document.querySelectorAll('.pen-animals').forEach(el => {
+                el.style.translate = '';
+                el.style.scale = '';
+                el.style.transition = '';
+                el.classList.remove('walking');
+            });
+        }
+
+        function startWander() {
+            stopWander();
+            wander.active = true;
+            Object.keys(state.animals).forEach((key, i) => {
+                wander.x[key] = 0;
+                scheduleWander(key, 500 + i * 450 + Math.random() * 900);
+            });
+        }
+
+        function scheduleWander(key, delay) {
+            wander.timers[key] = setTimeout(() => stepWander(key), delay);
+        }
+
+        function stepWander(key) {
+            if (!wander.active) return;
+            const animalEl = document.getElementById(`animal-${key}`);
+            const group = animalEl.parentElement;
+            const yard = group.parentElement;
+            const data = state.animals[key];
+
+            // hewan sakit diam lemas; layar belum tampil: coba lagi nanti
+            if (data.isSick || yard.clientWidth === 0) { scheduleWander(key, 1500); return; }
+
+            const sideWidth = c => [...c.children].reduce((sum, e) => sum + e.offsetWidth + 2, 0);
+            const sideW = Math.max(sideWidth(group.children[0]), sideWidth(group.children[2]));
+            const halfBody = (animalEl.offsetWidth * data.scale) / 2;
+            const maxX = Math.max(0, yard.clientWidth / 2 - halfBody - sideW - 8);
+            const cur = wander.x[key] || 0;
+
+            // kadang hanya berhenti / menoleh tanpa berjalan
+            const roll = Math.random();
+            if (maxX < 6 || roll < 0.22) {
+                if (roll < 0.1) {
+                    const flipped = group.style.scale === '-1 1';
+                    group.style.scale = flipped ? '1 1' : '-1 1';
+                }
+                scheduleWander(key, 1200 + Math.random() * 2600);
+                return;
+            }
+
+            let target = (Math.random() * 2 - 1) * maxX;
+            if (Math.abs(target - cur) < 14) target = cur > 0 ? -maxX * Math.random() : maxX * Math.random();
+            target = Math.max(-maxX, Math.min(maxX, target));
+
+            const dist = Math.abs(target - cur);
+            const speed = 20 + Math.random() * 14; // px per detik: santai
+            const dur = Math.max(0.8, dist / speed);
+            const movingRight = target > cur;
+            const flip = movingRight !== FACES_RIGHT[key];
+
+            group.style.scale = flip ? '-1 1' : '1 1';
+            group.style.transition = `translate ${dur}s ease-in-out`;
+            group.style.translate = `${target}px 0`;
+            group.classList.add('walking');
+            wander.x[key] = target;
+
+            wander.timers[key] = setTimeout(() => {
+                group.classList.remove('walking');
+                const rest = Math.random() < 0.25 ? 3000 + Math.random() * 2500 : 900 + Math.random() * 2300;
+                scheduleWander(key, rest);
+            }, dur * 1000 + 60);
+        }
+
+        function selectActivity(mode) {
+            state.mode = mode;
+            document.getElementById('config-subtitle').textContent = MODES[mode].subtitle;
+            showScreen('screen-config');
+        }
+
+        function generateNewQuestion() {
+            // Cek hewan sakit yang diabaikan setiap pergantian soal
+            const animalKeys = Object.keys(state.animals);
+            animalKeys.forEach(key => {
+                const data = state.animals[key];
+                if (data.isSick) {
+                    data.neglectCount++;
+                    if (data.neglectCount >= 2) {
+                        // Mati 1 anak hewan atau mengecil jika tidak ada anak
+                        if (data.children > 0) {
+                            data.children--;
+                        } else {
+                            data.scale = 1;
+                        }
+                        data.isSick = false;
+                        data.neglectCount = 0;
+                        data.failCount = 0;
+                        renderChildren(key);
+                        updateSickUI(key);
+                        showFloatingText(key, T.mati, "text-red-500");
+                    }
+                }
+            });
+
+            // Pilih misi/kebutuhan secara acak setiap putaran
+            const need = farmNeeds[Math.floor(Math.random() * farmNeeds.length)];
+            const badge = document.getElementById('mission-badge');
+            badge.className = `${need.bgClass} ${need.color} px-4 py-1 rounded-full text-[10px] sm:text-xs font-extrabold uppercase tracking-wider shadow-inner transition-colors duration-300`;
+            badge.textContent = need.text;
+            document.getElementById('mission-icon-bg').textContent = need.bg;
+
+            const targetAnimal = animalKeys[Math.floor(Math.random() * animalKeys.length)];
+            state.currentQuestion.targetAnimal = targetAnimal;
+
+            let op;
+            let num1, num2, answer;
+
+            // Fitur Leveling: Kesulitan bertambah berdasarkan Skor
+            if (state.score >= 150) {
+                // Sulit: Penjumlahan, Pengurangan, Perkalian
+                const ops = ['+', '-', 'x'];
+                op = ops[Math.floor(Math.random() * ops.length)];
+                if (op === 'x') {
+                    num1 = Math.floor(Math.random() * 10) + 1;
+                    num2 = Math.floor(Math.random() * 5) + 1;
+                    answer = num1 * num2;
+                } else if (op === '-') {
+                    num1 = Math.floor(Math.random() * 30) + 15;
+                    num2 = Math.floor(Math.random() * 15) + 1;
+                    answer = num1 - num2;
+                } else {
+                    num1 = Math.floor(Math.random() * 50) + 10;
+                    num2 = Math.floor(Math.random() * 50) + 10;
+                    answer = num1 + num2;
+                }
+            } else if (state.score >= 50) {
+                // Menengah: Penjumlahan dan Pengurangan
+                const ops = ['+', '-'];
+                op = ops[Math.floor(Math.random() * ops.length)];
+                if (op === '+') {
+                    num1 = Math.floor(Math.random() * 20) + 10;
+                    num2 = Math.floor(Math.random() * 20) + 5;
+                    answer = num1 + num2;
+                } else {
+                    num1 = Math.floor(Math.random() * 20) + 10;
+                    num2 = Math.floor(Math.random() * num1);
+                    answer = num1 - num2;
+                }
+            } else {
+                // Mudah: Hanya Penjumlahan dasar
+                op = '+';
+                num1 = Math.floor(Math.random() * 12) + 1;
+                num2 = Math.floor(Math.random() * 12) + 1;
+                answer = num1 + num2;
+            }
+
+            state.currentQuestion.answer = answer;
+            state.currentQuestion.text = `${num1} ${op} ${num2} = ${answer}`;
+            
+            assignRandomAnswersToPens(answer, targetAnimal);
+        }
+
+        let penAnswers = {};
+
+        function assignRandomAnswersToPens(correctAnswer, targetAnimal) {
+            const animalKeys = Object.keys(state.animals);
+            penAnswers[targetAnimal] = correctAnswer;
+
+            animalKeys.forEach(key => {
+                let pAns;
+                if (key !== targetAnimal) {
+                    do {
+                        pAns = correctAnswer + (Math.floor(Math.random() * 10) - 5);
+                    } while (pAns === correctAnswer || pAns < 0);
+                    penAnswers[key] = pAns;
+                } else {
+                    pAns = correctAnswer;
+                }
+                
+                // Menghapus kata "Porsi", hanya menampilkan angkanya saja
+                document.getElementById(`food-name-${key}`).textContent = penAnswers[key];
+            });
+
+            document.getElementById('auto-math-question').textContent = `${state.currentQuestion.text.split('=')[0]} = ?`;
+        }
+
+        function startTimer() {
+            state.timer = 60;
+            const timerText = document.getElementById('timer-text');
+            const timerBar = document.getElementById('timer-bar');
+            
+            timerText.textContent = state.timer;
+            timerBar.style.width = '100%';
+            timerBar.className = "h-full bg-gradient-to-r from-yellow-400 to-amber-500 w-full transition-all duration-1000";
+
+            clearInterval(state.timerInterval);
+            state.timerInterval = setInterval(() => {
+                state.timer--;
+                timerText.textContent = state.timer;
+                
+                const percent = (state.timer / 60) * 100;
+                timerBar.style.width = `${percent}%`;
+
+                if (state.timer <= 15) {
+                    timerBar.className = "h-full bg-gradient-to-r from-red-500 to-rose-600 transition-all duration-1000";
+                } else if (state.timer <= 30) {
+                    timerBar.className = "h-full bg-gradient-to-r from-orange-400 to-amber-500 transition-all duration-1000";
+                }
+
+                if (state.timer <= 0) {
+                    clearInterval(state.timerInterval);
+                    handleFail("Waktu Habis! ⏰", state.currentQuestion.targetAnimal);
+                }
+            }, 1000);
+        }
+
+        function feedAnimal(animalType) {
+            if (state.isAnswering) return;
+            
+            // Cegah interaksi menjawab jika hewan sedang sakit (harus dirawat dulu)
+            if (state.animals[animalType].isSick) {
+                showFloatingText(animalType, T.rawatDulu, "text-red-400");
+                return;
+            }
+
+            state.isAnswering = true;
+            clearInterval(state.timerInterval);
+
+            const clickedAnswer = penAnswers[animalType];
+            const correctAnswer = state.currentQuestion.answer;
+
+            if (clickedAnswer === correctAnswer) {
+                handleSuccess(animalType);
+            } else {
+                handleFail("Hitungan Kurang Tepat! 💢", animalType);
+            }
+        }
+
+        function handleSuccess(animalType) {
+            state.streak++;
+            updateStreakUI();
+            
+            const bonus = state.streak >= 3 ? 5 : 0;
+            const earnedPoints = 10 + bonus;
+            
+            showFeedback('🎉', 'Tindakan Berhasil!', `${T.sukses} (+${earnedPoints} Poin)${bonus > 0 ? ' 🔥 COMBO!' : ''}`, 'text-emerald-600', 'border-emerald-400');
+            updateScore(earnedPoints);
+            showFloatingScore(animalType, earnedPoints, true);
+
+            // Logika Tumbuh Kembang dan Beranak
+            const animalData = state.animals[animalType];
+            animalData.scale += 0.2; // Tambah ukuran
+            
+            // Batas maksimal agar tidak menutupi label, lalu beranak
+            if (animalData.scale > 1.4) {
+                animalData.scale = 1.0; // Kembali ke ukuran normal
+                if (animalData.children < 3) {
+                    animalData.children += 1; // Memunculkan anak (maksimal 3 anak)
+                }
+                renderChildren(animalType);
+            }
+            
+            const animalEl = document.getElementById(`animal-${animalType}`);
+            animalEl.style.transform = `scale(${animalData.scale})`;
+            animalEl.classList.add('animate-grow');
+            
+            setTimeout(() => {
+                animalEl.classList.remove('animate-grow');
+                hideFeedback();
+                state.isAnswering = false;
+                generateNewQuestion();
+                startTimer();
+            }, 1800);
+        }
+
+        function sellAnimals(animalType, event) {
+            event.stopPropagation(); // Mencegah klik menembus ke fungsi feedAnimal
+            
+            state.coins += 50;
+            document.getElementById('coin-display').textContent = state.coins;
+            state.animals[animalType].children = 0; // Kosongkan kandang anak hewan
+            renderChildren(animalType);
+            
+            showFloatingText(animalType, '+50 💰', 'text-yellow-400');
+            
+            // Efek pop pada UI uang
+            const coinDisplay = document.getElementById('coin-display');
+            coinDisplay.classList.add('animate-pop');
+            setTimeout(() => coinDisplay.classList.remove('animate-pop'), 400);
+        }
+
+        function renderChildren(animalType) {
+            const data = state.animals[animalType];
+            const leftContainer = document.getElementById(`children-left-${animalType}`);
+            const rightContainer = document.getElementById(`children-right-${animalType}`);
+            const sellBtn = document.getElementById(`sell-btn-${animalType}`);
+            
+            let htmlLeft = '';
+            let htmlRight = '';
+            
+            // Ukuran anak menyesuaikan jenis emoji
+            const childSize = (animalType === 'sapi' || animalType === 'kambing') ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-3xl';
+            
+            for (let i = 0; i < data.children; i++) {
+                let babyHtml = `<div class="animate-pop ${childSize} leading-none drop-shadow-md origin-bottom">${data.childEmoji}</div>`;
+                if (i % 2 === 0) {
+                    htmlRight += babyHtml;
+                } else {
+                    htmlLeft += babyHtml;
+                }
+            }
+            
+            leftContainer.innerHTML = htmlLeft;
+            rightContainer.innerHTML = htmlRight;
+
+            // Logika Penjualan ke Pasar: Muncul jika kandang sudah penuh (3 anak)
+            if (data.children >= 3) {
+                sellBtn.classList.remove('hidden');
+                sellBtn.classList.add('flex');
+            } else {
+                sellBtn.classList.add('hidden');
+                sellBtn.classList.remove('flex');
+            }
+        }
+
+        function handleFail(reason, animalType) {
+            state.streak = 0;
+            updateStreakUI();
+            
+            showFeedback('💢', 'Aduh, Salah!', `${reason} (-5 Poin)`, 'text-red-600', 'border-red-500');
+            updateScore(-5);
+
+            if (animalType) {
+                showFloatingScore(animalType, -5, false);
+                const animalData = state.animals[animalType];
+                const animalEl = document.getElementById(`animal-${animalType}`);
+                
+                // Logika Sakit
+                if (!animalData.isSick) {
+                    animalData.failCount++;
+                    if (animalData.failCount >= 3) {
+                        animalData.isSick = true;
+                        animalData.neglectCount = 0; // reset hitungan dibiarkan
+                        showFloatingText(animalType, T.sakit, "text-red-400 text-3xl");
+                        updateSickUI(animalType);
+                    }
+                }
+
+                animalEl.classList.add('animate-shake');
+                
+                let currentScale = animalData.scale;
+                if (currentScale > 1) {
+                    animalData.scale = Math.max(1, currentScale - 0.1);
+                    animalEl.style.transform = `scale(${animalData.scale})`;
+                }
+
+                setTimeout(() => {
+                    animalEl.classList.remove('animate-shake');
+                }, 500);
+            }
+
+            setTimeout(() => {
+                hideFeedback();
+                state.isAnswering = false;
+                generateNewQuestion();
+                startTimer();
+            }, 1800);
+        }
+
+        function updateSickUI(animalType) {
+            const data = state.animals[animalType];
+            const animalEl = document.getElementById(`animal-${animalType}`);
+            const treatBtn = document.getElementById(`treat-btn-${animalType}`);
+            const sellBtn = document.getElementById(`sell-btn-${animalType}`);
+            
+            if (data.isSick) {
+                animalEl.style.filter = 'grayscale(0.6) sepia(1) hue-rotate(50deg) opacity(0.8)';
+                treatBtn.classList.remove('hidden');
+                treatBtn.classList.add('flex');
+                sellBtn.classList.add('hidden'); // Sembunyikan tombol jual kalau sakit
+            } else {
+                animalEl.style.filter = 'none';
+                treatBtn.classList.add('hidden');
+                treatBtn.classList.remove('flex');
+                if (data.children >= 3) {
+                    sellBtn.classList.remove('hidden'); // Munculkan tombol jual lagi jika sudah sembuh
+                    sellBtn.classList.add('flex');
+                }
+            }
+        }
+
+        function treatAnimal(animalType, event) {
+            event.stopPropagation();
+            if (state.coins >= 20) {
+                state.coins -= 20;
+                document.getElementById('coin-display').textContent = state.coins;
+                
+                const data = state.animals[animalType];
+                data.isSick = false;
+                data.failCount = 0;
+                data.neglectCount = 0;
+                
+                updateSickUI(animalType);
+                showFloatingText(animalType, T.sehat, "text-emerald-400 text-3xl");
+                
+                const coinDisplay = document.getElementById('coin-display');
+                coinDisplay.classList.add('animate-pop');
+                setTimeout(() => coinDisplay.classList.remove('animate-pop'), 400);
+            } else {
+                showFloatingText(animalType, "Uang Kurang! 💰", "text-red-500 text-xl");
+            }
+        }
+
+        function showFeedback(icon, title, sub, titleColor, borderColor) {
+            const overlay = document.getElementById('feedback-overlay');
+            const box = document.getElementById('feedback-box');
+            document.getElementById('feedback-icon').textContent = icon;
+            
+            const titleEl = document.getElementById('feedback-text');
+            titleEl.textContent = title;
+            titleEl.className = `font-title text-3xl ${titleColor} mb-2 drop-shadow-sm`;
+            
+            document.getElementById('feedback-sub').textContent = sub;
+            box.className = `prologue-modal rounded-[2.5rem] p-8 text-center shadow-[0_10px_50px_rgba(0,0,0,0.3)] animate-pop max-w-sm w-full border-2 ${borderColor}`;
+            
+            overlay.classList.remove('hidden');
+        }
+
+        function hideFeedback() {
+            document.getElementById('feedback-overlay').classList.add('hidden');
+        }
+
+        window.onload = () => {
+            showScreen('screen-cover');
+        };
+    </script>
+    </div>
+</body>
+</html>
